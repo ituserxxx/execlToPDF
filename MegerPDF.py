@@ -48,7 +48,7 @@ def MergePDFto(filepath, outfile):
         for ff in rm_file_list:
             ff[0].close()
             os.remove(ff[1])
-            print("ggggg",ff[1])
+
         print("PDF文件合并完成！")
     else:
         print("没有可以合并的PDF文件！")
