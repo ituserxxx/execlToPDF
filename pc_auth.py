@@ -3,7 +3,7 @@ import os
 import subprocess
 
 appdataPath = os.getenv('APPDATA')
-authInfoFile = "xlsx2pdf.txt"
+authInfoFile = "xlsx2pdf.auth"
 def getPcUUID():
     command = "wmic csproduct get uuid"
     output = subprocess.check_output(command, shell=True).decode("utf-8")
