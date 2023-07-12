@@ -1,7 +1,7 @@
 import pathlib
 import win32com.client
 import os
-import MegerPDF
+import meger_pdf
 import PySimpleGUI as sg
 
 def get_xlsx(root_dir):
@@ -13,6 +13,8 @@ def get_xlsx(root_dir):
 
 
 def convert_some_file_to_pdf(xlsx_files):
+    # root_dir = curr_dir_path.strip('\"')
+    # xlsx_files = get_xlsx(root_dir)
     app = win32com.client.Dispatch("Excel.Application")
     app.Visible = False
     app.DisplayAlerts = False
@@ -31,31 +33,6 @@ def convert_some_file_to_pdf(xlsx_files):
     app.Quit()
     return new_pdf_list
 
-
-def to_pdf(curr_dir_path):
-    root_dir = curr_dir_path.strip('\"')
-    xlsx_files = get_xlsx(root_dir)
-
-    if len(xlsx_files) == 0:
-        print("当前目录没有 .xlsx 的文件")
-        return
-
-    app = win32com.client.Dispatch("Excel.Application")
-    app.Visible = False
-    app.DisplayAlerts = False
-
-    for i in xlsx_files:
-        xlsx = pathlib.Path(i)
-        xlsx_dir = xlsx.parent
-        xlsx_dir = str(xlsx_dir)
-        basename = xlsx.stem
-        basename = str(basename)
-        output_file = xlsx_dir + "/" + basename + ".pdf"
-        book = app.Workbooks.Open(xlsx)
-        xlTypePDF = 0
-        book.ExportAsFixedFormat(xlTypePDF, output_file)
-        print(xlsx)
-    app.Quit()
 
 
 # 创建文件选择对话框
@@ -125,7 +102,7 @@ def convertWindow():
                 xlsx_files.append(os.path.join(root_dir, file))
 
             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-            MegerPDF.MergeSomeFileToPDF(desktop_path,convert_some_file_to_pdf(xlsx_files))
+            meger_pdf.MergeSomeFileToPDF(desktop_path, convert_some_file_to_pdf(xlsx_files))
 
     window.close()
 
