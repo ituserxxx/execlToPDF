@@ -1,8 +1,11 @@
 import pathlib
+import threading
+
 import win32com.client
 import os
 import meger_pdf
 import PySimpleGUI as sg
+
 
 def get_xlsx(root_dir):
     xlsx_files = []
@@ -27,12 +30,11 @@ def convert_some_file_to_pdf(xlsx_files):
         basename = str(basename)
         output_file = xlsx_dir + "/" + basename + ".pdf"
         book = app.Workbooks.Open(xlsx)
-        xlTypePDF = 0
+        xlTypePDF = 0  # 固定只转换 xlsx 的第一页签：sheet1
         book.ExportAsFixedFormat(xlTypePDF, output_file)
         new_pdf_list.append(output_file)
     app.Quit()
     return new_pdf_list
-
 
 
 # 创建文件选择对话框
@@ -61,6 +63,23 @@ def get_xlsx_files(directory):
     return xlsx_files
 
 
+def sub_window_thread():
+    # 创建子窗口并运行事件循环
+    lay = [[sg.Text('这是一个自定义大小的弹窗')],
+           [sg.Multiline('', size=(30, 10))],
+           [sg.Button('确定')],
+           [sg.Button('取消')]
+           ]
+    # 创建弹窗并运行事件循环
+    p1 = sg.Window('自定义大小的弹窗示例', lay)
+    event, values = p1.read()
+    while True:
+        if event in (sg.WINDOW_CLOSED, '退出'):
+            break
+        if event == "取消":
+            break
+    p1.close()
+
 def convertWindow():
     # 创建主窗口布局
     layout = [[sg.Text('选择的目录: '), sg.Text('', key='-DIRECTORY-')],
@@ -71,14 +90,24 @@ def convertWindow():
               [sg.Output(size=(60, 10), key='-OUTPUT-')]]
 
     # 创建主窗口
-    window = sg.Window('Vtian 转换', layout)
+    # window = sg.Window('Vtian 转换 : 试用次数剩余3次', layout)
+    window = sg.Window('Vtian 转换 ', layout)
 
+    use_time = 0
     # 事件循环
     while True:
         event, values = window.read()
-
         if event in (sg.WINDOW_CLOSED, '退出'):
             break
+        if use_time == 0 and event in ('选择目录',"确认转换所选文件"):
+            window.disable()
+            t = threading.Thread(target=sub_window_thread)
+            t.start()
+            # sg.popup('试用次数已用完', title='提示', custom_text=("立即添加咨询", "取消"))
+
+            window.enable()
+            continue
+
         if event == '选择目录':
             directory = select_directory()
             window['-DIRECTORY-'].update(directory)
@@ -87,7 +116,6 @@ def convertWindow():
             window['-LISTBOX-'].update(values=choose_files)
 
             window['-OUTPUT-'].update(value="")
-
 
         if event == '确认转换所选文件':
             window['-OUTPUT-'].update(value="")
@@ -106,6 +134,7 @@ def convertWindow():
 
     window.close()
 
+
 def main():
     # 创建第一个页面的布局
     layout1 = [[sg.Text('这是第一个页面')], [sg.Button('切换到第二个页面')]]
@@ -115,7 +144,7 @@ def main():
 
     # 创建一个窗口并将第一个页面设置为默认显示
     window = sg.Window('页面切换示例', layout1)
-
+    sg.popup("当前试用次数剩余3")
     while True:
         event, _ = window.read()
 
@@ -130,7 +159,7 @@ def main():
             window = sg.Window('页面切换示例', layout1)
 
     window.close()
+
+
 if __name__ == '__main__':
     main()
-
-
