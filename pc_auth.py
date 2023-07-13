@@ -3,8 +3,8 @@ import os
 
 import subprocess
 
-# appdataPath = os.getenv('APPDATA')
-appdataPath = os.getcwd()
+appdataPath = os.getenv('APPDATA')
+# appdataPath = os.getcwd()
 authInfoFile = "xlsx2pdf.auth"
 
 
@@ -17,7 +17,7 @@ def getPcUUID():
 def initData():
     return {
         "is_permanent": False,
-        "number_of_times": 2,  # second
+        "number_of_times": -1,  # second
         "pc_id": getPcUUID(),
         "auth_code":""
     }

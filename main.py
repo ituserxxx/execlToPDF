@@ -5,7 +5,6 @@ import win32com.client
 import os
 import meger_pdf
 import PySimpleGUI as sg
-
 import pc_auth
 def get_xlsx(root_dir):
     xlsx_files = []
@@ -82,7 +81,6 @@ def sub_window_thread():
     p1.close()
 
 
-
 def convertWindow():
     auth_info = pc_auth.readAuthInfo()
 
@@ -94,21 +92,22 @@ def convertWindow():
               [sg.Button('确认转换所选文件')],
               [sg.Output(size=(60, 10), key='-OUTPUT-')]]
 
-    tips =""
+    tips = ""
     if auth_info["is_permanent"] is False:
-        tips  =  f': 试用次数剩余{auth_info["number_of_times"]}次'
+        tips = f': 试用次数剩余{auth_info["number_of_times"]}次'
     # 创建主窗口
     window = sg.Window(f'Vtian 转换 {tips}', layout)
     # 事件循环
     while True:
 
         event, values = window.read()
-        if auth_info["is_permanent"] is False and auth_info["number_of_times"] == 0 and event in ('选择目录',"确认转换所选文件"):
-            sg.popup('试用次数已用完\n请添加微信：ituserxxx 咨询', title='提示',modal=True)
+
+        if auth_info["is_permanent"] is False and auth_info["number_of_times"] == -1 and event in ('选择目录', "确认转换所选文件"):
+            sg.popup('试用次数已用完\n请添加微信：ituserxxx 咨询', title='提示', modal=True)
             continue
+
         if event in (sg.WINDOW_CLOSED, '退出'):
             break
-
 
         if event == '选择目录':
             directory = select_directory()
@@ -118,6 +117,7 @@ def convertWindow():
             window['-LISTBOX-'].update(values=choose_files)
 
             window['-OUTPUT-'].update(value="")
+            continue
 
         if event == '确认转换所选文件':
             window['-OUTPUT-'].update(value="")
@@ -135,10 +135,11 @@ def convertWindow():
             meger_pdf.MergeSomeFileToPDF(desktop_path, convert_some_file_to_pdf(xlsx_files))
             auth_info = pc_auth.descNumberOfTimes(1)
             window.set_title(f'Vtian 转换: 试用次数剩余{auth_info["number_of_times"]}次')
+            continue
 
     window.close()
 
 
-
+# pyinstaller -F -n Vtian_xlsxToPdf --icon=favicon.ico  --noconsole  main.py
 if __name__ == '__main__':
     convertWindow()
