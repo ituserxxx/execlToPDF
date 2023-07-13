@@ -1,12 +1,12 @@
 import pathlib
-import threading
+import time
 
 import win32com.client
 import os
 import meger_pdf
 import PySimpleGUI as sg
 
-
+import pc_auth
 def get_xlsx(root_dir):
     xlsx_files = []
     for file in os.listdir(root_dir):
@@ -78,9 +78,14 @@ def sub_window_thread():
             break
         if event == "取消":
             break
+        time.sleep(2)
     p1.close()
 
+
+
 def convertWindow():
+    auth_info = pc_auth.readAuthInfo()
+
     # 创建主窗口布局
     layout = [[sg.Text('选择的目录: '), sg.Text('', key='-DIRECTORY-')],
               [sg.Button('选择目录')],
@@ -89,24 +94,21 @@ def convertWindow():
               [sg.Button('确认转换所选文件')],
               [sg.Output(size=(60, 10), key='-OUTPUT-')]]
 
+    tips =""
+    if auth_info["is_permanent"] is False:
+        tips  =  f': 试用次数剩余{auth_info["number_of_times"]}次'
     # 创建主窗口
-    # window = sg.Window('Vtian 转换 : 试用次数剩余3次', layout)
-    window = sg.Window('Vtian 转换 ', layout)
-
-    use_time = 0
+    window = sg.Window(f'Vtian 转换 {tips}', layout)
     # 事件循环
     while True:
+
         event, values = window.read()
+        if auth_info["is_permanent"] is False and auth_info["number_of_times"] == 0 and event in ('选择目录',"确认转换所选文件"):
+            sg.popup('试用次数已用完\n请添加微信：ituserxxx 咨询', title='提示',modal=True)
+            continue
         if event in (sg.WINDOW_CLOSED, '退出'):
             break
-        if use_time == 0 and event in ('选择目录',"确认转换所选文件"):
-            window.disable()
-            t = threading.Thread(target=sub_window_thread)
-            t.start()
-            # sg.popup('试用次数已用完', title='提示', custom_text=("立即添加咨询", "取消"))
 
-            window.enable()
-            continue
 
         if event == '选择目录':
             directory = select_directory()
@@ -131,35 +133,12 @@ def convertWindow():
 
             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
             meger_pdf.MergeSomeFileToPDF(desktop_path, convert_some_file_to_pdf(xlsx_files))
+            auth_info = pc_auth.descNumberOfTimes(1)
+            window.set_title(f'Vtian 转换: 试用次数剩余{auth_info["number_of_times"]}次')
 
     window.close()
 
-
-def main():
-    # 创建第一个页面的布局
-    layout1 = [[sg.Text('这是第一个页面')], [sg.Button('切换到第二个页面')]]
-
-    # 创建第二个页面的布局
-    layout2 = [[sg.Text('这是第二个页面')], [sg.Button('切换到第一个页面')]]
-
-    # 创建一个窗口并将第一个页面设置为默认显示
-    window = sg.Window('页面切换示例', layout1)
-    sg.popup("当前试用次数剩余3")
-    while True:
-        event, _ = window.read()
-
-        # 根据事件类型进行相应的操作
-        if event == sg.WINDOW_CLOSED:
-            break
-        elif event == '切换到第二个页面':
-            window.close()
-            window = sg.Window('页面切换示例', layout2)
-        elif event == '切换到第一个页面':
-            window.close()
-            window = sg.Window('页面切换示例', layout1)
-
-    window.close()
 
 
 if __name__ == '__main__':
-    main()
+    convertWindow()
