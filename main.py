@@ -93,7 +93,7 @@ def convertWindow():
               [sg.Output(size=(60, 10), key='-OUTPUT-')]]
 
     tips = ""
-    if auth_info["is_permanent"] is False:
+    if auth_info["is_permanent"] is False and auth_info["number_of_times"] > -1:
         tips = f': 试用次数剩余{auth_info["number_of_times"]}次'
     # 创建主窗口
     window = sg.Window(f'Vtian 转换 {tips}', layout)
