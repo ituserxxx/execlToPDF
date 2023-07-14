@@ -18,7 +18,7 @@ def getFileName(filedir):
     return file_list if file_list else []
 
 # 合并一些文件到一个PDF文件
-def MergeSomeFileToPDF(root_dir,some_pdf_fileName):
+def MergeSomeFileToPDF(root_dir,some_pdf_fileName,isDelOrigin=True):
     outfile = datetime.datetime.now().strftime(f'{root_dir}\\newPDF_Vtian_%Y-%m-%d_%H_%M_%S.pdf')  # 输出的PDF文件的名称
     output = PdfFileWriter()
     outputPages = 0
@@ -43,12 +43,12 @@ def MergeSomeFileToPDF(root_dir,some_pdf_fileName):
     output.write(outputStream)
     outputStream.close()
 
-    for ff in rm_file_list:
-        ff[0].close()
-        os.remove(ff[1])
+    if isDelOrigin:
+        for ff in rm_file_list:
+            ff[0].close()
+            os.remove(ff[1])
+    return f"\nPDF文件合并完成！！！\n总页数:{outputPages} \n合并后的文件存放位置：\n {outfile}"
 
-    print(f"PDF文件合并完成！！！\n总页数:{outputPages}")
-    print(f"合并后的文件存放位置：\n {outfile}")
 
 
 # 合并同一目录下的所有PDF文件
