@@ -3,8 +3,8 @@ import os
 
 import subprocess
 
-# appdataPath = os.getenv('APPDATA')
-appdataPath = os.getcwd()
+appdataPath = os.getenv('APPDATA')
+# appdataPath = os.getcwd()
 authInfoFile = "xlsx2pdf.auth"
 
 

@@ -172,7 +172,6 @@ def convertWindow():
                 sg.popup("只有一个文件不需要转换吧~~")
                 continue
             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-            sg.popup(f'currTab=={currTab}', title='提示', modal=True)
             if currTab == 1:
                 result = meger_pdf.MergeSomeFileToPDF(desktop_path, handle_files, False)
                 window[f'-OUTPUT{currTab}-'].update(result, append=True)
