@@ -95,14 +95,16 @@ def convertWindow():
     tips = ""
     if auth_info["is_permanent"] is False and auth_info["number_of_times"] > -1:
         tips = f': 试用次数剩余{auth_info["number_of_times"]}次'
+    # 设定全局图标
+    sg.set_global_icon('favicon.ico')
     # 创建主窗口
-    window = sg.Window(f'Vtian 转换 {tips}', layout)
+    window = sg.Window(f'Vtian 转换 {tips}', layout=layout)
     # 事件循环
     while True:
 
         event, values = window.read()
 
-        if auth_info["is_permanent"] is False and auth_info["number_of_times"] == -1 and event in ('选择目录', "确认转换所选文件"):
+        if auth_info["is_permanent"] is False  and event in ('选择目录', "确认转换所选文件"):
             sg.popup('试用次数已用完\n请添加微信：ituserxxx 咨询', title='提示', modal=True)
             continue
 
@@ -133,13 +135,14 @@ def convertWindow():
 
             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
             meger_pdf.MergeSomeFileToPDF(desktop_path, convert_some_file_to_pdf(xlsx_files))
-            auth_info = pc_auth.descNumberOfTimes(1)
-            window.set_title(f'Vtian 转换: 试用次数剩余{auth_info["number_of_times"]}次')
+            if auth_info["is_permanent"] is False:
+                auth_info = pc_auth.descNumberOfTimes(1)
+                window.set_title(f'Vtian 转换: 试用次数剩余{auth_info["number_of_times"]}次')
             continue
 
     window.close()
 
-
+# pip freeze > requirements.txt
 # pyinstaller -F -n Vtian_xlsxToPdf --icon=favicon.ico  --noconsole  main.py
 if __name__ == '__main__':
     convertWindow()

@@ -8,3 +8,5 @@ execl、xls、xlsx to PDF
 - 下载 /dist/Vtian_xlsxToPdf.exe 
 - 将 xlsx 文件放到 Vtian_xlsxToPdf.exe 同级目录下，双击 Vtian_xlsxToPdf.exe 
 - 将生成 newPDF_ 开头的合并后的 PDF 文件
+
+### tag 1.1-window-display-only-xlsx-to-pdf

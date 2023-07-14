@@ -16,8 +16,8 @@ def getPcUUID():
 
 def initData():
     return {
-        "is_permanent": False,
-        "number_of_times": -1,  # second
+        "is_permanent": True,
+        "number_of_times": 0,  # second
         "pc_id": getPcUUID(),
         "auth_code":""
     }
