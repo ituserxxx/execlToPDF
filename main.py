@@ -124,6 +124,7 @@ def convertWindow():
         event, values = window.read()
 
         if event in (sg.WINDOW_CLOSED, '退出'):
+            print(11)
             break
 
         if auth_info["is_permanent"] is False and event in ('选择目录', "确认转换所选文件"):
@@ -185,6 +186,6 @@ def convertWindow():
 
 
 # pip freeze > requirements.txt
-# pyinstaller -F -n Vtian_xlsxToPdf --icon=favicon.ico  --noconsole  main.py
+# pyinstaller -F -n Vtian_xlsxToPdf --icon=favicon.ico --distpath ./unique_file  --noconsole  main.py
 if __name__ == '__main__':
     convertWindow()
